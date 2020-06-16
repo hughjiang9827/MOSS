@@ -362,12 +362,15 @@ MOSS_hazard <- R6Class("MOSS_hazard",
             ind <- max(which(norms <= clipping))
             # browser()
             if (ind > 1) break
+            # TODO: check
             # lambda.min.ratio <- (lambda.min.ratio + 1) / 2
             lambda.min.ratio <- sort(enet_fit$lambda, decreasing = TRUE)[2] / max(enet_fit$lambda)
           }
           epsilon_n <- enet_fit$beta[, ind]
         }, error = function(e) {
           # if error, epsilon = 0
+          # TODO: check
+          # print(e)
           return(rep(0, ncol(h_matrix)))
         })
       }
@@ -438,6 +441,9 @@ MOSS_hazard <- R6Class("MOSS_hazard",
         to_iterate <- FALSE
       }
 
+      # TODO: check
+      eic_list <- c(mean_eic_inner_prod_current)
+
       while (
         mean_eic_inner_prod_current >= self$tmle_tolerance * sqrt(max(k_grid)) &
         to_iterate
@@ -457,11 +463,17 @@ MOSS_hazard <- R6Class("MOSS_hazard",
         # new stopping
         mean_eic_inner_prod_prev <- mean_eic_inner_prod_current
         mean_eic_inner_prod_current <- abs(sqrt(sum(mean_eic ^ 2)))
+
+        # TODO: check
+        eic_list <- c(eic_list, mean_eic_inner_prod_current)
+
         num_iteration <- num_iteration + 1
         if (is.infinite(mean_eic_inner_prod_current) | is.na(mean_eic_inner_prod_current)) {
           warning("stopping criteria diverged. Reporting best result so far.")
           break
         }
+        # TODO: check
+        # if (TRUE) {
         if (mean_eic_inner_prod_current < mean_eic_inner_prod_best) {
           # the update caused PnEIC to beat the current best
           # update our best candidate
@@ -473,6 +485,8 @@ MOSS_hazard <- R6Class("MOSS_hazard",
           break
         }
       }
+      # TODO: check
+      # print(num_iteration)
       # always output the best candidate for final result
       self$density_failure <- self$q_best
       psi_n <- colMeans(self$density_failure$survival)
@@ -484,7 +498,9 @@ MOSS_hazard <- R6Class("MOSS_hazard",
           formatC(mean(psi_n), format = "e", digits = 2)
         ))
       }
-      return(psi_n)
+      # TODO: check
+      # return(psi_n)
+      return(list(psi_n=psi_n, eic_list=eic_list))
     }
   )
 )

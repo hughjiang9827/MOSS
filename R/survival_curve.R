@@ -234,7 +234,8 @@ evaluate_metric <- R6Class("evaluate_metric",
       }
       return(data.frame(t = self$survival$t, metric = l))
     },
-    evaluate_mse = function() {
+    # TODO: check
+    evaluate_mse = function(eic = -1) {
       l <- c()
       bias <- as.numeric(self$survival$survival - self$survival_truth$survival)
       mse <- as.numeric((self$survival$survival - self$survival_truth$survival) ^ 2)
@@ -242,7 +243,9 @@ evaluate_metric <- R6Class("evaluate_metric",
         t = self$survival$t,
         bias = bias,
         mse = mse,
-        truth = as.vector(self$survival_truth$survival)
+        truth = as.vector(self$survival_truth$survival),
+        # TODO: check
+        eic = rep(eic, length(bias))
       ))
     }
   )
